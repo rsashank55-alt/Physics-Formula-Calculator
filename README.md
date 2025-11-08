@@ -24,3 +24,7 @@ Then open `http://localhost:3000`.
 
 The Express server in `server.js` serves the static assets and adds sensible security headers for production.
 
+### One-click deploys
+
+Render will also detect the included `render.yaml` blueprint, so you can create the service from the “Blueprint” tab and keep infrastructure-as-code in sync with your repository.
+
