@@ -679,6 +679,7 @@ const state = {
   activeFormula: null,
   toastStep: 0,
   toastVisible: false,
+  lastFocusElement: null,
 };
 
 const form = document.getElementById("inputForm");
@@ -687,12 +688,16 @@ const illustrationContainer = document.getElementById("illustration");
 const illustrationTitle = document.getElementById("illustrationTitle");
 const calculateButton = document.getElementById("calculateButton");
 const calculatorTitle = document.getElementById("calculatorTitle");
+const interactionModal = document.getElementById("interactionModal");
+const interactiveArea = document.querySelector(".interactive-area");
 const resultCard = document.getElementById("resultCard");
 const resultBadge = document.getElementById("resultBadge");
 const resultValue = document.getElementById("resultValue");
 const resultUnits = document.getElementById("resultUnits");
 const explanationList = document.getElementById("explanation");
 const tourButton = document.getElementById("tourButton");
+const resultArea = document.querySelector(".result-area");
+const closeModalButton = document.getElementById("closeModal");
 
 const toast = document.createElement("div");
 toast.className = "tour-toast";
@@ -764,20 +769,61 @@ function renderCards() {
     const clone = template.content.cloneNode(true);
     const article = clone.querySelector(".formula-card");
     article.dataset.formula = formula.id;
+    article.tabIndex = 0;
+    article.setAttribute("role", "button");
+    article.setAttribute("aria-pressed", "false");
     article.querySelector(".card-title").textContent = formula.title;
     article.querySelector(".card-chip").textContent = formula.symbol;
     article.querySelector(".card-description").textContent =
       formula.description;
-    article.addEventListener("click", () => selectFormula(formula.id));
-    clone.querySelector(".select-button").addEventListener("click", (event) => {
-      event.stopPropagation();
-      selectFormula(formula.id);
-    });
+    const selectButton = clone.querySelector(".select-button");
+    selectButton.setAttribute("type", "button");
+    selectButton.dataset.formula = formula.id;
     formulaCardsContainer.appendChild(clone);
   });
 }
 
-function selectFormula(formulaId) {
+function handleCardClick(event) {
+  const targetButton = event.target.closest(".select-button");
+  if (targetButton && targetButton.dataset.formula) {
+    event.preventDefault();
+    selectFormula(targetButton.dataset.formula);
+    return;
+  }
+
+  const card = event.target.closest(".formula-card");
+  if (!card) return;
+  event.preventDefault();
+  selectFormula(card.dataset.formula);
+}
+
+function handleCardKeydown(event) {
+  if (event.key !== "Enter" && event.key !== " ") return;
+  const card = event.target.closest(".formula-card");
+  if (!card) return;
+  event.preventDefault();
+  selectFormula(card.dataset.formula);
+}
+
+function openInteractionModal() {
+  if (!interactionModal) return;
+  interactionModal.classList.add("active");
+  interactionModal.setAttribute("aria-hidden", "false");
+  document.body.classList.add("modal-open");
+}
+
+function closeInteractionModal() {
+  if (!interactionModal) return;
+  interactionModal.classList.remove("active");
+  interactionModal.setAttribute("aria-hidden", "true");
+  document.body.classList.remove("modal-open");
+  if (state.lastFocusElement) {
+    state.lastFocusElement.focus({ preventScroll: true });
+    state.lastFocusElement = null;
+  }
+}
+
+function selectFormula(formulaId, options = {}) {
   const formula = formulas.find((entry) => entry.id === formulaId);
   if (!formula) return;
 
@@ -786,9 +832,11 @@ function selectFormula(formulaId) {
   illustrationTitle.textContent = formula.title;
   illustrationContainer.innerHTML = formula.illustration();
 
-  document
-    .querySelectorAll(".formula-card")
-    .forEach((card) => card.classList.toggle("active", card.dataset.formula === formulaId));
+  document.querySelectorAll(".formula-card").forEach((card) => {
+    const isActive = card.dataset.formula === formulaId;
+    card.classList.toggle("active", isActive);
+    card.setAttribute("aria-pressed", String(isActive));
+  });
 
   renderInputs(formula);
   calculateButton.disabled = false;
@@ -796,6 +844,19 @@ function selectFormula(formulaId) {
   resultValue.textContent = "—";
   resultUnits.textContent = "";
   explanationList.innerHTML = "";
+  interactiveArea?.classList.add("active");
+  resultArea?.classList.add("active");
+
+  if (!options.silent) {
+    state.lastFocusElement =
+      document.querySelector(`.formula-card[data-formula="${formulaId}"]`) || null;
+    openInteractionModal();
+  }
+
+  const firstInput = form.querySelector("input");
+  if (firstInput) {
+    setTimeout(() => firstInput.focus({ preventScroll: true }), 250);
+  }
 }
 
 function renderInputs(formula) {
@@ -890,8 +951,22 @@ function calculate() {
 
 function init() {
   renderCards();
+  formulaCardsContainer.addEventListener("click", handleCardClick);
+  formulaCardsContainer.addEventListener("keydown", handleCardKeydown);
+  closeModalButton?.addEventListener("click", () => closeInteractionModal());
+  interactionModal?.addEventListener("click", (event) => {
+    if (event.target.dataset.close === "true") {
+      closeInteractionModal();
+    }
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      closeInteractionModal();
+    }
+  });
   createEmojiSparkles();
   attachToastEvents();
+  selectFormula(formulas[0].id, { silent: true });
   tourButton.addEventListener("click", () => {
     state.toastStep = 0;
     updateToast(state.toastStep);
