@@ -1084,3 +1084,68 @@ header {
   }
 }
 
+@media (max-width: 480px) {
+  main {
+    padding: 1.6rem 0.85rem 3rem;
+  }
+
+  header {
+    gap: 0.8rem;
+  }
+
+  .title-block h1 {
+    font-size: 2rem;
+  }
+
+  .title-block p {
+    font-size: 0.95rem;
+  }
+
+  .formula-cards {
+    display: flex;
+    overflow-x: auto;
+    gap: 1rem;
+    padding-bottom: 0.4rem;
+    scroll-snap-type: x mandatory;
+  }
+
+  .formula-card {
+    min-width: 250px;
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+    padding: 1rem;
+  }
+
+  .card-description {
+    font-size: 0.9rem;
+  }
+
+  .interactive-area {
+    gap: 1.2rem;
+  }
+
+  .illustration {
+    min-height: 180px;
+  }
+
+  .scene {
+    max-width: 260px;
+  }
+
+  .input-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .result-value {
+    font-size: 2.2rem;
+  }
+
+  .tour-toast {
+    left: 5%;
+    right: 5%;
+    top: auto;
+    bottom: 20px;
+    transform: translateY(10px);
+  }
+}
+
