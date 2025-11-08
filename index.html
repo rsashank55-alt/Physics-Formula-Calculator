@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Physics Formula Explorer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="nebula">
+      <div class="blob blob-one"></div>
+      <div class="blob blob-two"></div>
+      <div class="blob blob-three"></div>
+      <div class="grid-lines"></div>
+    </div>
+    <main>
+      <header>
+        <div class="title-block">
+          <h1>Physics Formula Explorer</h1>
+          <p>
+            Pick a formula, plug in your values, and watch the explanation come
+            alive with guided animations.
+          </p>
+        </div>
+        <button id="tourButton" class="pill-button">Show Me Around</button>
+      </header>
+
+      <section class="formula-cards" id="formulaCards"></section>
+
+      <section class="interactive-area">
+        <aside class="illustration-card">
+          <h2 id="illustrationTitle">Select a formula</h2>
+          <div class="illustration" id="illustration">
+            <div class="placeholder">
+              <span class="sparkle sparkle-one"></span>
+              <span class="sparkle sparkle-two"></span>
+              <span class="sparkle sparkle-three"></span>
+              <p>Your illustration will animate here.</p>
+            </div>
+          </div>
+        </aside>
+
+        <section class="calculator">
+          <h2 id="calculatorTitle">Your inputs</h2>
+          <form id="inputForm" class="input-grid"></form>
+          <button id="calculateButton" class="primary-button" disabled>
+            Calculate &amp; Explain
+          </button>
+        </section>
+      </section>
+
+      <section class="result-area">
+        <div class="result-card" id="resultCard">
+          <div class="result-header">
+            <h2>Result</h2>
+            <span id="resultBadge" class="result-badge hidden">New</span>
+          </div>
+          <div id="resultValue" class="result-value">—</div>
+          <div id="resultUnits" class="result-units"></div>
+          <div class="explanation" id="explanation"></div>
+        </div>
+      </section>
+    </main>
+
+    <template id="cardTemplate">
+      <article class="formula-card">
+        <div class="card-header">
+          <h3 class="card-title"></h3>
+          <span class="card-chip"></span>
+        </div>
+        <p class="card-description"></p>
+        <button class="secondary-button select-button">Explore</button>
+      </article>
+    </template>
+
+    <script src="script.js"></script>
+  </body>
+</html>
+
